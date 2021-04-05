@@ -27,10 +27,12 @@ clf
 % ax2  = subplot(1, 2, 2);
 hold on
 patch(x0(1, :), x0(2, :), 'r', 'Linewidth', 3, 'EdgeColor', 'none')
-title('Contours of Safety Margin')
-xlabel('x')
-ylabel('y')
-
+title('Contours of Safety Margin', 'FontSize', 16)
+xlabel('x_1')
+ylabel('x_2')
+xlim([-2, 2])
+ylim([-2,2])
+axis square
 for i = 1:length(clist)
 %     subplot(1 ,2, 1);
 %     x = dist_contour(Ntheta, R, clist(i));

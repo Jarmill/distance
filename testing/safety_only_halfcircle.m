@@ -5,9 +5,9 @@ R = 1;
 % dist_out = half_circ_dist(x_in, R)
 
 %% plot contours
-Ntheta =  75;
+Ntheta =  60;
 % clist = 0.1:0.1:2;
-clist = 0.2:0.2:2;
+clist = 0.25:0.25:2;
 % x = dist_contour(Ntheta, R, 0.5);
 figure(1)
 

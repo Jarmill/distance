@@ -6,12 +6,12 @@ rng(343, 'twister');
 
 %options 
 SOLVE_DIST = 1;
-SOLVE_FEAS = 1;
+SOLVE_FEAS = 0;
 
-SAMPLE = 1;
+SAMPLE = 0;
 
-PLOT_FLOW = 1;
-PLOT_DIST = 1;
+PLOT_FLOW = 0;
+PLOT_DIST = 0;
 
 n = 2;
 order = 4;

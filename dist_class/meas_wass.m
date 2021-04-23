@@ -1,5 +1,5 @@
-classdef meas_joint < meas_interface
-    %MEAS_JOINT A Wasserstein joint probability measure for distance
+classdef meas_wass < meas_interface
+    %MEAS_WASS A Wasserstein joint probability measure for distance
     %estimation. Used to compute the distance between points on
     %trajectories and points on an unsafe set    
     
@@ -12,7 +12,7 @@ classdef meas_joint < meas_interface
     end
     
     methods
-        function obj = meas_joint(vars,supp)
+        function obj = meas_wass(vars,supp)
             %MEAS_WASS Construct an instance of this class
             obj@meas_interface(vars, supp)
         end

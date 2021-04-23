@@ -20,13 +20,18 @@ classdef unsafe_support < loc_support
 
             %TODO: redo interface with 'distance' function
                
-            if nargin > 1
-                obj@loc_support(vars, loc_ref);
-                obj.X_unsafe = subs_vars(loc_ref.X_unsafe, loc_ref.vars.y, obj.vars.y);                
-                obj.dist = loc_ref.dist;
-            else
-                obj@loc_support(vars);
+            if nargin == 1
+                loc_ref = [];
             end
+            
+            obj@loc_support(vars, loc_ref);
+            
+            if nargin > 1                
+                obj.X_unsafe = subs_vars(loc_ref.X_unsafe, loc_ref.vars.y, obj.vars.y);                
+                obj.dist = loc_ref.dist;                   
+            end
+            
+            %enter the rest of the information by indexing in the main file
                         
         end
         

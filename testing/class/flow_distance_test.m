@@ -1,3 +1,6 @@
+clear
+mset clear
+
 %class-based flow distance implementation
 mpol('t', 1, 1)
 mpol('x', 2, 1)

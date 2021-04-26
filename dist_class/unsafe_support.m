@@ -35,6 +35,7 @@ classdef unsafe_support < loc_support
                         
         end
         
+        %% support getters        
         function vars_out = get_vars_joint(obj)
             vars_out = [obj.vars.x;
                         obj.vars.y];

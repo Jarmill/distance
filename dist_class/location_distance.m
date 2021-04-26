@@ -178,7 +178,7 @@ classdef location_distance < location
             cons = (marg_wass - marg_term);            
         end
         
-        function [objective, cons_eq, cons_ineq] = all_cons(obj, d)
+        function [objective, cons_eq, cons_ineq, len_dual] = all_cons(obj, d)
             %ALL_CONS all constraints involving solely location
             %does not include sum of mass of initial measures
             %Output:
@@ -188,7 +188,7 @@ classdef location_distance < location
             %gather all constraints together
             liou = obj.liou_con(d);
             len_liou = length(liou);
-            [abscont, len_abscont] = obj.abscont_con(d);
+            [abscont, len_abscont] = obj.abscont_box_con(d);
             
             [objective, cons_ineq] = obj.objective_con();
             
@@ -196,10 +196,11 @@ classdef location_distance < location
             len_marg = length(marg);
             
             %package up the output
-            obj.len_dual.v = len_liou;
-            obj.len_dual.zeta = len_abscont;
-            obj.len_dual.w = len_marg;
-            obj.len_dual.beta = length(cons_ineq);
+            len_dual = struct;
+            len_dual.v = len_liou;
+            len_dual.zeta = len_abscont;
+            len_dual.w = len_marg;
+            len_dual.beta = length(cons_ineq);
             
             %ensure this iss the correct sign
             cons_eq = [-liou; abscont; marg]==0;                        

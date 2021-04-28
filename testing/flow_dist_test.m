@@ -2,15 +2,15 @@
 %half-circle unsafe set
 
 rng(343, 'twister');
-
+status_feas = 1;
 
 %options 
-SOLVE_DIST = 1;
+SOLVE_DIST = 0;
 SOLVE_FEAS = 0;
 
-SAMPLE = 0;
+SAMPLE = 1;
 
-PLOT_FLOW = 0;
+PLOT_FLOW = 1;
 PLOT_DIST = 0;
 
 n = 2;
@@ -26,21 +26,28 @@ BOX = 3;
 %initial set
 C0 = [1.5; 0];
 R0 = 0.4;
+% 
+% C0 = [1.5; 0];
+% R0 = 0.4;
 
 
 %unsafe set
 % theta_c = 3*pi/2;     %safe, bound = 0.18951
-% theta_c = 5*pi/4;      %safe, bound = 0.3184
+theta_c = 5*pi/4;      %safe, bound = 0.3184
 % theta_c = 7*pi/4;     %unsafe, bound = 4.6647\times 10^{-4}
 % theta_c = pi;
 
 % theta_c = 3*pi/2;     %safe, bound = 0.18951
 % theta_c = 9*pi/8;
-theta_c = pi/2;
+% theta_c = pi/2;
 % theta_c = 13*pi/8;
 
 % Cu = [0; -0.75];
-Cu = [-0.5; -0.75];
+% Cu = [-0.5; -0.75];
+% Ru = 0.5;
+
+Cu = [0; -0.5];
+%Cu = [2.5; 0];
 Ru = 0.5;
 
 %plotting
@@ -218,7 +225,7 @@ end
 
 %% Sample trajectories
 if SAMPLE
-    Nsample = 20;
+    Nsample = 150;
     Tmax_sim = 5;
 %     sampler = @() circle_sample(1)'*R0 + C0;
 

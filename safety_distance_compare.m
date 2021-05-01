@@ -21,37 +21,50 @@ clf
 theta_c = -pi/4;
 Rot = [cos(theta_c), -sin(theta_c); sin(theta_c), cos(theta_c)];
 
-hold on
+
 x0 = Rot*x0;
+for i = 1:2
+    subplot(1, 2, i)
+    hold on
 patch(x0(1, :), x0(2, :), 'r', 'Linewidth', 3, 'EdgeColor', 'none')
-title('Contours of Safety Margin', 'FontSize', 16)
+% title('Contours of Euclidean Distance', 'FontSize', 16)
 xlabel('x_1')
 ylabel('x_2')
-% xlim([-2, 2])
-% ylim([-2,2])
-% xlim([-3,3])
-% ylim([-3,3])
-
+xlim([-3, 3])
+ylim([-3,3])
 axis square
+end
 aut = autumn(length(clist) + 1);
 
 for i = 1:length(clist)
-%     subplot(1 ,2, 1);
-%     x = dist_contour(Ntheta, R, clist(i));
-%     plot(x(1, :), x(2, :), 'r')
+    subplot(1 ,2, 1);
+    x = dist_contour(Ntheta, R, clist(i));
+    x = Rot*x;
+    plot(x(1, :), x(2, :), 'color', aut(i+1, :))
     
-%     subplot(1 ,2, 2);
+    subplot(1 ,2, 2);
     x = safety_contour(Ntheta, R, -clist(i));
     x = Rot*x;
 %     plot(x(1, :), x(2, :), 'r')
     plot(x(1, :), x(2, :), 'color', aut(i+1, :))
 end
 
+
+FS = 16
 clist_rev = 0:-0.25:2;
 % colormap(aut);
 colormap(autumn(140));
 % colorbar('Direction', 'reverse', 'Ticks', clist_rev, 'TickLabels', 0:-0.5:-2);
+subplot(1 ,2, 1);
 colorbar('Ticks', 0:0.25:1, 'TickLabels', 0:-0.5:-2);
+title('L2 Distance Contours', 'FontSize', FS)
+
+subplot(1 ,2, 2);
+colormap(autumn(140));
+% colorbar('Direction', 'reverse', 'Ticks', clist_rev, 'TickLabels', 0:-0.5:-2);
+subplot(1 ,2, 2);
+colorbar('Ticks', 0:0.25:1, 'TickLabels', 0:0.5:2);
+title('Safety Margin Contours', 'FontSize', FS)
 
 % title('Contours of L2 Distance')
 

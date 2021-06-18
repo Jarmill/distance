@@ -5,7 +5,7 @@ rng(343, 'twister');
 status_feas = 1;
 
 %options 
-SOLVE_DIST = 0;
+SOLVE_DIST = 1;
 SOLVE_FEAS = 0;
 
 SAMPLE = 1;
@@ -37,6 +37,8 @@ theta_c = 5*pi/4;      %safe, bound = 0.3184
 % theta_c = 7*pi/4;     %unsafe, bound = 4.6647\times 10^{-4}
 % theta_c = pi;
 
+% theta_c = 5*pi/4 - pi/8;
+
 % theta_c = 3*pi/2;     %safe, bound = 0.18951
 % theta_c = 9*pi/8;
 % theta_c = pi/2;
@@ -46,7 +48,8 @@ theta_c = 5*pi/4;      %safe, bound = 0.3184
 % Cu = [-0.5; -0.75];
 % Ru = 0.5;
 
-Cu = [0; -0.5];
+% Cu = [0; -0.5];
+Cu = [0; -0.7];
 %Cu = [2.5; 0];
 Ru = 0.5;
 
@@ -61,7 +64,7 @@ mset('yalmip',true);
 %                 'mosek.MSK_DPAR_BASIS_TOL_X', 1e-9, 'mosek.MSK_DPAR_INTPNT_CO_TOL_MU_RED', 1e-10, ...
 %                 'mosek.MSK_DPAR_INTPNT_TOL_PATH', 1e-6));
 %     
-mset(sdpsettings('solver', 'sedumi'))
+mset(sdpsettings('solver', 'mosek'))
 mpol('x', 2, 1);
 % f = Tmax * [x(2); -x(1) + (1/3).* x(1).^3 - x(2) ];
 f = Tmax*f_func(x);

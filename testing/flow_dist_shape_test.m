@@ -335,7 +335,7 @@ if PLOT_FLOW
     Rot_mat = [cos(theta_cf) -sin(theta_cf); sin(theta_cf) cos(theta_cf)];
     x_dist = Rot_mat*x_dist_align + Cu;
     
-    plot(x_dist(1, :), x_dist(2, :), 'r', 'DisplayName', 'Distance Contour', 'LineWidth', 2)
+%     plot(x_dist(1, :), x_dist(2, :), 'r', 'DisplayName', 'Distance Contour', 'LineWidth', 2)
     
     
     

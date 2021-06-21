@@ -1,13 +1,13 @@
 %find the minimum distance between a shape carried along trajectories of the 'flow' system and a
 %half-circle unsafe set
 
-Shape_color = [0.8500    0.3250    0.0980];
+shape_color = [179, 0, 255]/255;
 
 rng(343, 'twister');
 status_feas = 1;
 
 %options 
-SOLVE_DIST = 1;
+SOLVE_DIST = 0;
 SOLVE_FEAS = 0;
 
 SAMPLE = 1;
@@ -280,7 +280,6 @@ if SAMPLE
 
 %     s_opt.parallel = 0;
 %     s_opt.mu = 0.4;
-\
 %     out_sim = sampler(dynamics, Nsample, s_opt);
 %     out.optimal = 0;
 
@@ -323,7 +322,9 @@ if PLOT_FLOW
 %         end
 %     end
 %     
-    rect_shape = R_shape*shape_side*[1,1,-1,-1,1;-1,1,1,-1,-1] + xs_rec;
+    rect_shape_0 = R_shape*shape_side*[1,1,-1,-1,1;-1,1,1,-1,-1];
+    rect_shape_init = rect_shape_0 + x0_rec;
+    rect_shape_peak = rect_shape_0+ xs_rec;
 
 %     plot(X0(1, :), X0(2, :), 'k', 'Linewidth', 3, 'DisplayName', 'Initial Set')
     patch(Xu(1, :), Xu(2, :), 'r', 'Linewidth', 3, 'EdgeColor', 'none', 'DisplayName', 'Unsafe Set')
@@ -339,8 +340,7 @@ if PLOT_FLOW
     
     
     if optimal_pt
-        patch(rect_shape(1, :), rect_shape(2, :),'k', 'Linewidth', 3,'DisplayName', 'Shape', 'EdgeColor', shape_color, 'FaceColor', 'None')
-    
+
         plot(out_sim_peak.x(:, 1), out_sim_peak.x(:, 2), 'b', 'DisplayName', 'Closest Traj.', 'LineWidth', 2);       
         
         scatter(x0_rec(1), x0_rec(2), 200, 'ob', 'DisplayName', 'Closest Initial', 'LineWidth', 2);        
@@ -349,17 +349,22 @@ if PLOT_FLOW
         scatter(xp_rec(1), xp_rec(2), 200, '*b', 'DisplayName', 'Closest Point', 'LineWidth', 2);        
         scatter(xu_rec(1), xu_rec(2), 200, 'sb', 'DisplayName', 'Closest Unsafe', 'LineWidth', 2);        
         
+         patch(rect_shape_init(1, :), rect_shape_init(2, :),'k', 'Linewidth', 3,'DisplayName', 'Initial Shape', 'EdgeColor', shape_color, 'FaceColor', 'None')
+    
+        patch(rect_shape_peak(1, :), rect_shape_peak(2, :),'k', 'Linewidth', 3,'DisplayName', 'Peak Shape', 'EdgeColor', shape_color, 'FaceColor', 'None')
         plot([xp_rec(1); xu_rec(1)], [xp_rec(2); xu_rec(2)], ':k', 'DisplayName', 'Closest Distance', 'Linewidth', 1.5)
+       
     end
 
     
     legend('location', 'northwest')
     
-    xlim([-1, 2.5])
-    ylim([-2, 1.5])
+    xlim([-0.6, 1.7])
+    ylim([-1.3, 0.3])
+    pbaspect([diff(xlim), diff(ylim), 1])
     xlabel('x_1')
     ylabel('x_2')
-    axis square
+%     axis square
     
     if status_feas == 0
         %feasible program 

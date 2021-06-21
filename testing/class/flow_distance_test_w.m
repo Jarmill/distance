@@ -72,13 +72,13 @@ if PLOT
 
 %     patch(x_dist(1, :), x_dist(2, :),'r', 'Linewidth', 3,'DisplayName', 'L1 Contour', 'EdgeColor', 'r', 'FaceColor', 'None')       
     %distance contour
-    x_dist_align = dist_contour(100, Ru, dist_rec);
+%     x_dist_align = dist_contour(100, Ru, dist_rec);
 
-    theta_cf = theta_c - 3*pi/2;
-    Rot_mat = [cos(theta_cf) -sin(theta_cf); sin(theta_cf) cos(theta_cf)];
-    x_dist = Rot_mat*x_dist_align + Cu;
-    
-    plot(x_dist(1, :), x_dist(2, :), 'r', 'DisplayName', 'Distance Contour', 'LineWidth', 2)
+%     theta_cf = theta_c - 3*pi/2;
+%     Rot_mat = [cos(theta_cf) -sin(theta_cf); sin(theta_cf) cos(theta_cf)];
+%     x_dist = Rot_mat*x_dist_align + Cu;
+%     
+%     plot(x_dist(1, :), x_dist(2, :), 'r', 'DisplayName', 'Distance Contour', 'LineWidth', 2)
     
     
     theta = linspace(0, 2*pi, 200);

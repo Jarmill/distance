@@ -329,6 +329,45 @@ classdef location_distance < location
             supp_con_out = [supp_con_out; wass_supp];
         end
         
+        function [optimal, mom_out, corner] = recover(obj, tol)
+            %RECOVER if top corner of the moment matrix is rank-1, then
+            %return approximate optimizer
+            
+%             optimal = opt_init && opt_term;
+%             
+%             mom_out = struct('t0', mom_init.t, 'x0', mom_init.x, ...
+%                              'tp', mom_term.t, 'xp', mom_term.x);     
+%             corner = struct('init', corner_init, 'term', corner_term);
+            if nargin < 2
+                tol = 5e-4;
+            end
+
+%             
+            [optimal, mom_out, corner] = recover@location_interface(obj, tol);
+            
+            if isempty(obj.wass)
+                opt_wass = 1;
+                mom_wass.t = []; mom_wass.x = [];
+                corner_term = 0;
+            else
+%                 opt_wass = 0;
+                opt_wass_all = 0;
+                for i = 1:length(obj.wass)
+                    [opt_wass, mom_wass, corner_wass] = obj.wass{i}.recover(tol);
+                    
+                    if corner_wass(1,1) > (1-tol)
+                        opt_wass_all = opt_wass;
+                        mom_out.y = mom_wass.y;
+                        corner.wass = corner_wass;
+                        break
+                    end
+                end
+                
+                optimal = optimal && opt_wass_all;
+            end
+            
+        end
+        
     end
 end
 

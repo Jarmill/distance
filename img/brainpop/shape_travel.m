@@ -39,7 +39,7 @@ FS_title = 16;
     ylim([-0.7, 0.3])
     pbaspect([diff(xlim), diff(ylim), 1])
  axis off
- title('Angular Velocity = 0', 'FontSize', FS_title)
+ title('Angular Velocity = 0 rad/sec', 'FontSize', FS_title)
  
  
     %% rotating shape
@@ -64,7 +64,7 @@ FS_title = 16;
     ylim([-0.7, 0.3])
     pbaspect([diff(xlim), diff(ylim), 1])
     axis off
-     title('Angular Velocity = 1', 'FontSize', FS_title)
+     title('Angular Velocity = 1 rad/sec', 'FontSize', FS_title)
     
     
  

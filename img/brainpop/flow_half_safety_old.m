@@ -5,9 +5,9 @@ rng(300, 'twister')
 
 %dynamics and support set
 %prajna and rantzer flow
-SOLVE = 0;
-SAMPLE = 1;
-PLOT = 1;
+SOLVE = 1;
+SAMPLE = 0;
+PLOT = 0;
 
 if SOLVE
 
@@ -21,7 +21,8 @@ Xsupp = [];
 
 %dynamics
 wmax = 0.25;
-wraw = wmax*(2*b-1);
+% wraw = wmax*(2*b-1);
+wraw = 0;
 f = [x(2); (-1+wraw)*x(1) + (1/3).* x(1).^3 - x(2)];
 X = [];
 

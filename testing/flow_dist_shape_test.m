@@ -327,8 +327,7 @@ if PLOT_FLOW
 
 %     plot(X0(1, :), X0(2, :), 'k', 'Linewidth', 3, 'DisplayName', 'Initial Set')
     patch(Xu(1, :), Xu(2, :), 'r', 'Linewidth', 3, 'EdgeColor', 'none', 'DisplayName', 'Unsafe Set')
-    patch(rect_shape(1, :), rect_shape(2, :),'k', 'Linewidth', 3,'DisplayName', 'Shape', 'EdgeColor', shape_color, 'FaceColor', 'None')
-    %distance contour
+%distance contour
     x_dist_align = dist_contour(100, Ru, dist_rec);
 
     theta_cf = theta_c - 3*pi/2;
@@ -340,6 +339,8 @@ if PLOT_FLOW
     
     
     if optimal_pt
+        patch(rect_shape(1, :), rect_shape(2, :),'k', 'Linewidth', 3,'DisplayName', 'Shape', 'EdgeColor', shape_color, 'FaceColor', 'None')
+    
         plot(out_sim_peak.x(:, 1), out_sim_peak.x(:, 2), 'b', 'DisplayName', 'Closest Traj.', 'LineWidth', 2);       
         
         scatter(x0_rec(1), x0_rec(2), 200, 'ob', 'DisplayName', 'Closest Initial', 'LineWidth', 2);        

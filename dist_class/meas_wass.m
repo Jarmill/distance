@@ -80,7 +80,7 @@ classdef meas_wass < meas_interface
 
                 Nx = length(obj.vars.x);
                 mom_out.x = corner(1+(1:Nx), 1);                
-                mom_out.y = corner(2+Nx+(1:Nx), 1);                
+                mom_out.y = corner(1+Nx+(1:Nx), 1);                
 
             end
         end

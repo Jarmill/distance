@@ -22,8 +22,7 @@ lsupp.X_init = ((x(1)-C0(1))^2 + (x(2)-C0(2))^2 <= R0^2);
 
 %unsafe set
 % theta_c = pi/2;
-theta_c =5*pi/4;
-% Cu = [-0.5; -0.75];
+theta_c =5*pi% Cu = [-0.5; -0.75];
 Cu = [0; -0.7];
 Ru = 0.5;
 c1f = Ru^2 - (y(1) - Cu(1)).^2 - (y(2) - Cu(2)).^2;

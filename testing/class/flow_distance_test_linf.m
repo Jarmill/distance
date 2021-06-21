@@ -28,13 +28,11 @@ Cu = [0; -0.7];
 Ru = 0.5;
 c1f = Ru^2 - (y(1) - Cu(1)).^2 - (y(2) - Cu(2)).^2;
 
-% theta_c = 3*pi/2;
-% theta_c = 
 w_c = [cos(theta_c); sin(theta_c)];
 c2f = w_c(1)*(y(1) - Cu(1)) + w_c(2) * (y(2) - Cu(2)); 
 lsupp.X_unsafe = [c1f; c2f] >= 0;
 
-lsupp.dist = (x-y)'*(x-y);
+lsupp.dist = [(x-y); (y-x)];
 
 %% call distance manager
 
@@ -47,5 +45,5 @@ order = 4;
 d = 2*order;
 % [objective, mom_con, supp_con] = PM.cons(d);
 sol = PM.run(order);
-sqrt(sol.obj_rec)
+sol.obj_rec
 % [objective, cons_eq, cons_ineq] = PM.loc.all_cons(d);

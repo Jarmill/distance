@@ -1,15 +1,6 @@
 classdef distance_manager < manager_interface
     %DISTANCE_MANAGER Summary of this class goes here
-    %   Detailed explanation goes here
-    
-    properties
- 
-        supp;
-        meas_wass;
-        
-        dist;
-    end
-    
+    %   Detailed explanation goes here    
     methods
         function obj = distance_manager(unsafe_supp, f)
             %DISTANCE_MANAGER Construct an instance of this class

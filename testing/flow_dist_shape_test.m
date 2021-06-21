@@ -280,7 +280,7 @@ if SAMPLE
 
 %     s_opt.parallel = 0;
 %     s_opt.mu = 0.4;
-
+\
 %     out_sim = sampler(dynamics, Nsample, s_opt);
 %     out.optimal = 0;
 

@@ -97,7 +97,7 @@ classdef location_distance < location
         end
         
         %% Constraint Generation
-        function [obj_min, obj_con] = objective_con(obj, dist)
+        function [obj_min, obj_con_ineq, obj_con_eq] = objective_con(obj, dist)
             %OBJECTIVE_CON deal with the objective, which is the
             %expectation of distance with regards to the wasserstein
             %penalty. This is a minimization, so obj_min is necessary
@@ -105,7 +105,8 @@ classdef location_distance < location
                 dist = obj.dist;
             end
                                     
-            obj_con = [];
+            obj_con_ineq = [];
+            obj_con_eq = [];
             joint_vars = [obj.vars.x; obj.vars.y];
             if isempty(dist)
                 obj_min = 0;
@@ -120,8 +121,11 @@ classdef location_distance < location
                 %dist is a cell, deal with cells
                 %includes linear programming lifts
                 obj_min = 0;
-                obj_con = [];
-                obj.len_dual.beta = zeros(dist, 1);
+                obj_con_ineq = [];
+                if ~iscell(dist)
+                    dist = {dist};
+                end
+                obj.len_dual.beta = zeros(length(dist), 1);
                 for j =1:length(dist)
                     
                     %process the name of the variable q
@@ -153,7 +157,8 @@ classdef location_distance < location
                     end
                     
                     %moment constraint with q
-                    obj_con = [obj_con; mass(q) == 1; (mom(q) >= dist_subs);];
+                    obj_con_ineq = [obj_con_ineq; (mom(q) >= dist_subs)];
+                    obj_con_eq = [obj_con_eq; mass(q) == 1];
                 end                                              
             end
             
@@ -190,7 +195,7 @@ classdef location_distance < location
             len_liou = length(liou);
             [abscont, len_abscont] = obj.abscont_box_con(d);
             
-            [objective, cons_ineq] = obj.objective_con();
+            [objective, cons_ineq, cons_eq_obj]= obj.objective_con();
             
             marg = obj.marg_wass_con(d);
             len_marg = length(marg);
@@ -203,7 +208,8 @@ classdef location_distance < location
             len_dual.beta = length(cons_ineq);
             
             %ensure this iss the correct sign
-            cons_eq = [-liou; abscont; marg]==0;                        
+            cons_eq = [-liou; abscont; marg]==0; 
+            cons_eq = [cons_eq; cons_eq_obj];
         end
         
         function [len_out] = len_eq_cons(obj)
@@ -236,7 +242,9 @@ classdef location_distance < location
                  Nterms = length(obj.dist);
                  obj.dual.beta = cell(Nterms, 1);
                  for i =1:Nterms
-                     obj.dual.beta{i} = rec_ineq(beta_count + (1:obj.len_dual.beta));
+                     len_dist = length(obj.dist{i});
+                     obj.dual.beta{i} = rec_ineq(beta_count + (1:len_dist));
+                     beta_count = beta_count + len_dist;
                  end
              end
              

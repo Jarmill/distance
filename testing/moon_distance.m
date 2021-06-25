@@ -7,20 +7,21 @@
 % h = 0.8;
 % h = 1.8;
 % h = 2.5;
-h = 0.1;
+h = 1.3;
 c = 0.5*(1/h - h) ;
 r = 0.5*(h + 1/h);
 
 %outer circle
 % H = 1;
-H = 3;
+H = 2;
 C = 0.5*(1/H - H);
 R = 0.5*(H + 1/H);
  
 
 % dist = 0.5;
 % dist = 2.8;
-dist = 0.5;
+% dist = 0.5;
+dist = 0.285714285714286;
 % dist = 1.023
 % dist = 2.61;
 %when dist > h+c there is a transition, and there will be a pinch point in
@@ -35,6 +36,8 @@ eq_out = ((R+dist)^2 == x^2 + (y-C)^2);
 [xin, yin] = solve([eq_in,eq_side], [x,y]);
 [xout, yout] = solve([eq_out,eq_side], [x,y]);
 
+xin = real(xin(1));
+yin = real(yin(1));
 
 %% figure out angle ranges
 theta_outer = atan2(yout-C, xout);

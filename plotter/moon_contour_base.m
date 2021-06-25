@@ -33,8 +33,8 @@ end
 c_in = 0.5*(1/h_in - h_in);
 r_in = 0.5*(1/h_in + h_in);
 
-c_out = 0.5*(1/h_in - h_in);
-r_out = 0.5*(1/h_in + h_in);
+c_out = 0.5*(1/h_out - h_out);
+r_out = 0.5*(1/h_out + h_out);
 
 %% intersection computation
 syms x y
@@ -60,6 +60,9 @@ else
     else
         %nominal
         [xin, yin] = solve([eq_in,eq_side], [x,y]);
+        
+        xin = real(xin(1));
+        yin = real(yin(1));
         theta_inner = atan2(yin-c_in, xin);
     end           
 end
@@ -99,19 +102,21 @@ x_cont = double([x_half, x_refl]);
 
 %% now assemble the moon
 if h_in == 0
-    x_moon_in = [0; 0];
+    x_moon_in = [1,-1; 0, 0];
 else
     angle_moon_in  = asin(1/r_in);
-    theta_moon_in  = linspace(-angle_moon_in, angle_moon_in, Narc);
+    theta_moon_in  = linspace(angle_moon_in, -angle_moon_in, Narc)-pi/2;
     x_moon_in = (r_in)*[cos(theta_moon_in); sin(theta_moon_in)] + [0; c_in];
 end
 
 angle_moon_out = asin(1/r_out);
-theta_moon_out = linspace(-angle_moon_out, angle_moon_out, Narc);
+theta_moon_out = linspace(-angle_moon_out, angle_moon_out, Narc)-pi/2;
 
 x_moon_out = (r_out)*[cos(theta_moon_out); sin(theta_moon_out)] + [0; c_out];
 
-
+% x_in_refl = x_in
+x_moon = [x_moon_out, x_moon_in];
+% x_moon = x_moon_in;
 
 end
 

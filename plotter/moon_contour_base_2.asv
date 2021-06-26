@@ -80,15 +80,15 @@ theta_outer_side = atan2(x_outer(2), x_outer(1)-1);
 theta_inner_side = atan2(x_inner(2), x_inner(1)-1);
 
 
-if (dist > 1) && (h_in > 1)
+if dist > 1
     sdist = sqrt(dist^2-1);
-    theta_side_side_top = wrapTo2Pi(atan2(sdist, -1));
-    theta_side_side_bot = wrapTo2Pi(atan2(-sdist, -1));
+    theta_side_side_top = atan2(sdist, -1);
+    theta_side_side_bot = atan2(-sdist, -1);
     
     
     
-    Nside_top = floor(Narc * (theta_side_side_top-theta_outer_side)/(2*pi))+1;
-    theta_side_top = linspace(theta_outer_side,(theta_side_side_top), Nside_top);
+    Nside_top = floor(Narc * (theta_outer_side - theta_side_side_top)/(2*pi))+1;
+    theta_side_top = linspace(theta_outer_side,wrapTo2Pi(theta_side_side_top), Nside_top);
     x_side_top = (dist)*[cos(theta_side_top); sin(theta_side_top)] + [1; 0];
     %the side circles overlap. There may be 2 connected components
     
@@ -97,10 +97,13 @@ if (dist > 1) && (h_in > 1)
             Nside_bot = floor(Narc * (theta_side_side_bot - theta_inner_side)/(2*pi))+1;
             theta_side_bot = linspace(theta_side_side_bot,wrapTo2Pi(theta_inner_side), Nside_bot);
             x_side_bot = (dist)*[cos(theta_side_bot); sin(theta_side_bot)] + [1; 0];
-            
-            
-        x_side = [x_side, [NaN; NaN], x_side_bot];
-    end    
+    end
+    
+    
+    
+    
+    
+    
 else
     %the side circles do not overlap, at most 1 connected component
     Nside = floor(Narc * (theta_outer_side - theta_inner_side)/(2*pi))+1;
@@ -114,10 +117,10 @@ end
 x_half = [x_out, x_side, x_in];
 % x_half = [x_out, [NaN; NaN], x_in];
 
-x_refl = diag([-1,1])*x_half(:, end:-1:1);
+% x_refl = diag([-1,1])*x_half(:, end:-1:1);
 
-x_cont = double([x_half, x_refl]);
-% x_cont = x_half;
+% x_cont = double([x_half, x_refl]);
+x_cont = x_half;
 
 end
 

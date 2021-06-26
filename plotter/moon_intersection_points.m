@@ -15,8 +15,8 @@ poly_center = @(c) [c^2+1, -2*(c^2+1), c^2 + 1 - dist^2];
 
 %inner/side
 if c_in == Inf
-    xin = 1;
-    yin = dist;
+    x_in = 1;
+    y_in = dist;
 else
     poly_in = poly_center(c_in);
     roots_in = roots(poly_in);

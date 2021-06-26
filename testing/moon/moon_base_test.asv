@@ -22,7 +22,7 @@ hold on
 %moon contour
 x_moon = moon_base(h_in, h_out);
 
-patch(x_moon(1, :), x_moon(2, :), 'k')
+plot(x_moon(1, :), x_moon(2, :), 'k', 'LineWidth', 3)
  
 %% test the contour
 c_in = [0.5*(1/h_in - h_in)];
@@ -41,7 +41,6 @@ x_cont = moon_contour_base_2(h_in, h_out, dist);
 plot(x_cont(1, :), x_cont(2, :), 'r', 'LineWidth', 3)
 pbaspect([diff(xlim), diff(ylim), 1])
 axis off
-title(sprintf('Inner Height = %0.2f', h_in), 'FontSize', 18)
 pause
-
+title(sprint'Inner Height = ', num2str(h_in)
 end

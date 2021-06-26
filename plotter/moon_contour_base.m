@@ -1,4 +1,4 @@
-function [x_cont, x_moon] = moon_contour_base(h_in, h_out, dist, Narc)
+function [x_cont] = moon_contour_base(h_in, h_out, dist, Narc)
 %MOON_CONTOUR_BASE the L2 contour of a moon.
 %The moon contains points [-1, 0] and [1, 0]. It is defined between a
 %circle at height h_in and at height h_out, where the height is the lowest
@@ -15,7 +15,6 @@ function [x_cont, x_moon] = moon_contour_base(h_in, h_out, dist, Narc)
 %
 %Output:
 %   x_cont: contour of the moon
-%   x_moon: points on the moon
 %% input processing
 assert(h_out > h_in, 'Outer circle height should be larger than inner circle height');
 
@@ -98,25 +97,6 @@ x_half = [x_out, x_side, x_in];
 x_refl = diag([-1,1])*x_half(:, end:-1:1);
 
 x_cont = double([x_half, x_refl]);
-
-
-%% now assemble the moon
-if h_in == 0
-    x_moon_in = [1,-1; 0, 0];
-else
-    angle_moon_in  = asin(1/r_in);
-    theta_moon_in  = linspace(angle_moon_in, -angle_moon_in, Narc)-pi/2;
-    x_moon_in = (r_in)*[cos(theta_moon_in); sin(theta_moon_in)] + [0; c_in];
-end
-
-angle_moon_out = asin(1/r_out);
-theta_moon_out = linspace(-angle_moon_out, angle_moon_out, Narc)-pi/2;
-
-x_moon_out = (r_out)*[cos(theta_moon_out); sin(theta_moon_out)] + [0; c_out];
-
-% x_in_refl = x_in
-x_moon = [x_moon_out, x_moon_in];
-% x_moon = x_moon_in;
 
 end
 

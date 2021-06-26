@@ -4,12 +4,14 @@
 
 %inner circle
 % h = 0.9;
-% h = 0.8;
+h = 0.8;
+% h = 0.4;
 % h = 1.3;
-h = 2.5;
+% h = 2.5;
 
 %outer circle
-H = 3;
+% H = 3;
+H = 2;
 % H = 2;
 % H = 3;
 
@@ -36,13 +38,14 @@ dist_max = 4;
 
 dist_range = linspace(0, dist_max, Ndist);
 aut = autumn(length(dist_range));
+x_moon = moon_base(h, H);
 
 for i = 2:Ndist
 %         x_contour = l1_circ_quart_contour(dist_range(i), R, 100);
     curr_dist = dist_range(i);
 
 %          subplot(1,2, 1)   
-    [Xdist_curr, x_moon] = moon_contour_base(h, H, curr_dist);
+    Xdist_curr = moon_contour_base(h, H, curr_dist);
     patch(Xdist_curr(1, :), Xdist_curr(2, :),'r', 'Linewidth', 3,'DisplayName', 'L1 Contour', ...        
     'EdgeColor', aut(i, :), 'FaceColor', 'None')
   

@@ -13,7 +13,7 @@ theta = linspace(0, 2*pi, 200);
 circ = [cos(theta); sin(theta)];
 X0 = C0 + circ*R0;
 
-out_sim = out_sim_multi;
+% out_sim = out_sim_multi;
 for i = 1:length(out_sim)
     if i == 1
         plot(out_sim{i}.x(:, 1), out_sim{i}.x(:, 2), 'c', 'DisplayName', 'Trajectories');

@@ -26,7 +26,7 @@ theta_half_range = linspace(theta_c-pi/2, theta_c + pi/2, 200);
 circ_half = [cos(theta_half_range); sin(theta_half_range)];
 Xu = Cu + circ_half* Ru;
 
-out_sim = out_sim_multi;
+% out_sim = out_sim_multi;
 for i = 1:length(out_sim)
     if i == 1
         plot(out_sim{i}.x(:, 1), out_sim{i}.x(:, 2), 'c', 'DisplayName', 'Trajectories');
@@ -37,6 +37,12 @@ end
 
 plot(X0(1, :), X0(2, :), 'k', 'Linewidth', 3, 'DisplayName', 'Initial Set')
 patch(Xu(1, :), Xu(2, :), 'r', 'Linewidth', 3, 'EdgeColor', 'none', 'DisplayName', 'Unsafe Set')
+
+
+[t_opt, x_opt] = ode45(@(t, x) [x(2); -x(1) + (1/3).* x(1).^3 - x(2) ], [0, 5], opt_result.x0);
+out_sim_peak.t = t_opt;
+out_sim_peak.x = x_opt;
+
 
 dist = sol.obj_rec;
 x_dist = l1_halfcirc_contour(sol.obj_rec, Ru, theta_c, 500) + Cu;

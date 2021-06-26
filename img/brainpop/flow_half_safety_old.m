@@ -5,9 +5,9 @@ rng(300, 'twister')
 
 %dynamics and support set
 %prajna and rantzer flow
-SOLVE = 1;
+SOLVE = 0;
 SAMPLE = 0;
-PLOT = 0;
+PLOT = 1;
 
 if SOLVE
 
@@ -99,16 +99,16 @@ x0 = C0;
 mu = 1;
 
 % Nsample = 60;
-Nsample = 150;
-% Nsample = 20;
-s_opt = sampler_options;
-s_opt.sample.x = @() sphere_sample(1, 2)'*R0 + C0;
-s_opt.Tmax = Tmax_sim;
-s_opt.Nb = 1;
-s_opt.parallel = 1;
+% Nsample = 150;
+% % Nsample = 20;
+% s_opt = sampler_options;
+% s_opt.sample.x = @() sphere_sample(1, 2)'*R0 + C0;
+% s_opt.Tmax = Tmax_sim;
+% s_opt.Nb = 1;
+% s_opt.parallel = 1;
 
 tic
-out_sim = sampler(out.dynamics, Nsample, s_opt);
+% out_sim = sampler(out.dynamics, Nsample, s_opt);
 sample_time = toc;
 if (out.optimal == 1)
     s_opt.sample.x = @() out.x0;
@@ -203,7 +203,7 @@ if PLOT
         %hlines_p = streamline(x, y, xdot, ydot, x0_out(1), x0_out(2));
         %set(hlines_p, 'LineWidth', 2)
 
-        plot(out_sim_peak{1}.x(:, 1), out_sim_peak{1}.x(:, 2), 'b', 'HandleVisibility', 'off', 'Linewidth', 2);
+        plot(out_sim_peak.x(:, 1), out_sim_peak.x(:, 2), 'b', 'HandleVisibility', 'off', 'Linewidth', 2);
 
         scatter(out.x0(1), out.x0(2), 200, 'ob', 'DisplayName', 'Peak Initial', 'LineWidth', 2);        
         scatter(out.xp(1), out.xp(2), 200, '*b', 'DisplayName', 'Peak Achieved', 'LineWidth', 2);        

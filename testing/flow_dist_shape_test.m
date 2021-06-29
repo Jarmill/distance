@@ -7,7 +7,7 @@ rng(343, 'twister');
 status_feas = 1;
 
 %options 
-SOLVE_DIST = 0;
+SOLVE_DIST = 1;
 SOLVE_FEAS = 0;
 
 SAMPLE = 1;

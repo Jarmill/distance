@@ -1,7 +1,9 @@
-%Certify set disconnectedness
-%union of [0, low] and [high, 1]
-
-order = 5; 
+%Perform distance estimation along flow system
+%trajectories start from a circle X0, unsafe set is a half-circle Xu
+%are trajectories safe with respect to the unsafe set?
+%Author: Jared Miller, 29/06/21
+SAFE = 1;
+order = 4; 
 d =2*order;
 
 f_func = @(x) [x(2); -x(1) + (1/3).* x(1).^3 - x(2) ];
@@ -23,18 +25,17 @@ R0 = 0.4;
 % R0 = 0.4;
 
 
-%unsafe set
-% theta_c = 5*pi/4;       %safe, order 4: 0.2831, order 5: 0.2832
-theta_c = 4*pi/4;     %unsafe, bound = 4.6647\times 10^{-4}
-
+%angle of unsafe set 
+if SAFE
+    theta_c = 5*pi/4;       %safe, order 4: 0.2831, order 5: 0.2832
+else
+    theta_c = 4*pi/4;       %unsafe, order 4: 1.176e-3
+end
 Cu = [0; -0.7];
 %Cu = [2.5; 0];
 Ru = 0.5; 
 
 c1f = Ru^2 - (y(1) - Cu(1)).^2 - (y(2) - Cu(2)).^2;
-
-% theta_c = 3*pi/2;
-% theta_c = 
 w_c = [cos(theta_c); sin(theta_c)];
 c2f = w_c(1)*(y(1) - Cu(1)) + w_c(2) * (y(2) - Cu(2)); 
 
@@ -86,9 +87,11 @@ objective = -gamma;
 %% package up
 coeff = [cv; cw; gamma; coeff0; coeffaux; coeffdist; coeffL];
 cons = [cons0; consaux; consdist; consL];
-opts = sdpsettings('solver', 'mosek');
+opts = sdpsettings('solver', 'mosek', 'savesolverinput', 1);
 opts.sos.model = 2;
 
 [sol, monom, Gram, residual] = solvesos(cons, objective, opts, [coeff]);
 
-sqrt(value(gamma))
+
+
+dist_rec = sqrt(value(gamma))

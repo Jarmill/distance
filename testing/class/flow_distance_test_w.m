@@ -1,5 +1,5 @@
 
-
+%flow system with time-dependent uncertainty w (no structure)
 SOLVE = 1;
 PLOT = 0;
 
@@ -9,13 +9,13 @@ if SOLVE
 mpol('t', 1, 1)
 mpol('x', 2, 1)
 mpol('y', 2, 1)
-mpol('b', 1, 1)
+mpol('w', 1, 1)
 
 vars = struct;
 vars.t = t;
 vars.x = x;
 vars.y = y;
-vars.b = b;
+vars.w = w;
 
 lsupp = unsafe_support(vars);
 BOX = 3;
@@ -43,11 +43,12 @@ lsupp.X_unsafe = [c1f; c2f] >= 0;
 
 lsupp.dist = (x-y)'*(x-y);
 
+lsupp.disturb = (w^2 <= 1);
 %% call distance manager
 
 %flow system
 wmax = 0.25;
-draw = wmax*(2*b - 1);
+draw = wmax*w;
 % draw = 0;
 f = [x(2); (-1 + draw)*x(1) + (1/3).* x(1).^3 - x(2) ];
 PM = distance_manager(lsupp, f);
@@ -58,7 +59,7 @@ order = 5;
 d = 2*order;
 % [objective, mom_con, supp_con] = PM.cons(d);
 sol = PM.run(order);
-dist_rec = sqrt(sol.obj_rec);
+dist_rec = sqrt(sol.obj_rec)
 [optimal, mom_out, corner] = PM.loc.recover();
 end
 
@@ -70,15 +71,15 @@ if PLOT
     clf
     hold on
 
-%     patch(x_dist(1, :), x_dist(2, :),'r', 'Linewidth', 3,'DisplayName', 'L1 Contour', 'EdgeColor', 'r', 'FaceColor', 'None')       
-    %distance contour
-%     x_dist_align = dist_contour(100, Ru, dist_rec);
 
-%     theta_cf = theta_c - 3*pi/2;
-%     Rot_mat = [cos(theta_cf) -sin(theta_cf); sin(theta_cf) cos(theta_cf)];
-%     x_dist = Rot_mat*x_dist_align + Cu;
-%     
-%     plot(x_dist(1, :), x_dist(2, :), 'r', 'DisplayName', 'Distance Contour', 'LineWidth', 2)
+    %distance contour
+    x_dist_align = dist_contour(100, Ru, dist_rec);
+
+    theta_cf = theta_c - 3*pi/2;
+    Rot_mat = [cos(theta_cf) -sin(theta_cf); sin(theta_cf) cos(theta_cf)];
+    x_dist = Rot_mat*x_dist_align + Cu;
+    
+    plot(x_dist(1, :), x_dist(2, :), 'r', 'DisplayName', 'Distance Contour', 'LineWidth', 2)
     
     
     theta = linspace(0, 2*pi, 200);

@@ -77,3 +77,5 @@ dist_rec = sqrt(sol.obj_rec)
 
 [optimal, mom_rec, corner_rec] = PM.loc.recover();
 % [objective, cons_eq, cons_ineq] = PM.loc.all_cons(d);
+
+[recover, mom_rec, corner_rec] = PM.loc.recover();

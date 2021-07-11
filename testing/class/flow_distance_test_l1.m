@@ -52,9 +52,9 @@ sol.obj_rec
 % [objective, cons_eq, cons_ineq] = PM.loc.all_cons(d);
 
 %% Recovery
-[opt_init, s_init, corner_init] = PM.loc.init.recover();
-[opt_term, s_term, corner_term] = PM.loc.term.recover();
-[opt_wass, s_wass, corner_wass] = PM.loc.wass{1}.recover();
-
+% [opt_init, s_init, corner_init] = PM.loc.init.recover();
+% [opt_term, s_term, corner_term] = PM.loc.term.recover();
+% [opt_wass, s_wass, corner_wass] = PM.loc.wass{1}.recover();
+[opt, mom_rec, corner] = PM.loc.recover();
 opt_result = struct('xp', s_wass.x, 'y', s_wass.y, 'tp', s_term.t, 'x0', s_init.x, 'Cu', Cu,...
     'Ru', Ru, 'R0', R0, 'C0', C0);

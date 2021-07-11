@@ -48,4 +48,5 @@ d = 2*order;
 % [objective, mom_con, supp_con] = PM.cons(d);
 sol = PM.run(order);
 sqrt(sol.obj_rec)
+[optimal, mom_rec, corner_rec] = PM.loc.recover()
 % [objective, cons_eq, cons_ineq] = PM.loc.all_cons(d);

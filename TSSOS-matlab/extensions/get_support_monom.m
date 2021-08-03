@@ -43,7 +43,7 @@ for k = 1:m+1
 end
 
 ssupp{1}=unique(ssupp{1},'rows', 'stable');
-
+lt(1) = size(ssupp{1}, 1);
 
 %% generate bases
 

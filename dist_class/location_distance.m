@@ -13,7 +13,7 @@ classdef location_distance < location
         function obj = location_distance(unsafe_supp, f, id)
             %LOCATION_DISTANCE Construct an instance of this class
             %   Detailed explanation goes here
-            if nargin < 4
+            if nargin < 3
                 id = [];   
             end
             
@@ -23,7 +23,7 @@ classdef location_distance < location
             %now deal with customized code for distance estimation            
             obj.dist = obj.process_distance(unsafe_supp.dist);
             
-            vars_wass = struct('x', obj.vars.x, 'y', obj.vars.y);
+%             vars_wass = struct('x', obj.vars.x, 'y', obj.vars.y);
             
             %generalize to multiple unsafe sets 
 %             unsafe_supp.
@@ -114,7 +114,8 @@ classdef location_distance < location
                 %a scalar distance penalty, no lifting necessary
                 dist_subs = 0;
                 for i = 1:length(obj.wass)
-                    dist_subs = dist_subs + mom(obj.wass{i}.var_sub(joint_vars, dist));
+%                     dist_subs = dist_subs + mom(obj.wass{i}.var_sub(joint_vars, dist));
+                    dist_subs = dist_subs + obj.wass{i}.mom_objective(dist, joint_vars);
                 end
                 obj_min = (dist_subs);                            
             else                
@@ -153,7 +154,8 @@ classdef location_distance < location
                     %sum up the expectation (moment) of distance 
                     %from each unsafe set's wasserstein measure
                     for i = 1:length(obj.wass)
-                        dist_subs = dist_subs + mom(obj.wass{i}.var_sub(joint_vars, dist_curr));
+%                         dist_subs = dist_subs + mom(obj.wass{i}.var_sub(joint_vars, dist_curr));
+                        dist_subs = dist_subs + obj.wass{i}.mom_objective(dist, joint_vars);
                     end
                     
                     %moment constraint with q
@@ -355,7 +357,13 @@ classdef location_distance < location
                 for i = 1:length(obj.wass)
                     [opt_wass, mom_wass, corner_wass] = obj.wass{i}.recover(tol);
                     
-                    if corner_wass(1,1) > (1-tol)
+                    if iscell(corner_wass)
+                        corner_crit = corner_wass{1}(1,1) > (1-tol);
+                    else
+                        corner_crit = corner_wass(1,1) > (1-tol);
+                    end
+                    
+                    if corner_crit
                         opt_wass_all = opt_wass;
                         mom_out.y = mom_wass.y;
                         corner.wass = corner_wass;

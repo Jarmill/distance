@@ -9,6 +9,8 @@ classdef unsafe_support < loc_support
         X_unsafe = [];
         
         dist; 
+        
+        CSP = 0;
     end
     
     methods

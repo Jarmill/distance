@@ -8,7 +8,11 @@ classdef distance_manager < manager_interface
 %             obj.Property1 = inputArg1 + inputArg2;
 
             %set up the location
-            loc_curr = location_distance(unsafe_supp, f, []);
+            if unsafe_supp.CSP
+                loc_curr = location_distance_csp(unsafe_supp, f, []);
+            else
+                loc_curr = location_distance(unsafe_supp, f, []);
+            end
             obj@manager_interface(loc_curr);
                         
         end

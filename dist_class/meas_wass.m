@@ -55,6 +55,12 @@ classdef meas_wass < meas_interface
             mmmon_out = mom(mmon_out);
         end 
     
+        function mom_obj = mom_objective(obj, p, joint_vars)
+            %evaluate moments for location_distance/objective_con
+            
+            mom_obj = mom(obj.var_sub(joint_vars, p));
+        end
+        
         function [optimal, mom_out, corner] = recover(obj, tol)
             %RECOVER if top corner of the wasserstein moment matrix is 
             % rank-1, then return approximate pair of points of closest 

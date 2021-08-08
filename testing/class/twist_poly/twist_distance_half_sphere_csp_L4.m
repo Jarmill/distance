@@ -29,7 +29,11 @@ c1f = (-(y(1)-Cu(1))^2 - (y(2)-Cu(2))^2  - (y(3) - Cu(3))^2 + Ru^2);
 c2f = -y(3); 
 lsupp.X_unsafe = [c1f; c2f] >= 0;
 
-lsupp.dist = (x-y)'*(x-y);
+%L2 bound
+% lsupp.dist = (x-y)'*(x-y);
+% lsupp.dist = sum((x-y).^2);
+
+lsupp.dist = sum((x-y).^4);
 
 lsupp.CSP = 1;
 
@@ -52,7 +56,8 @@ order = 5;
 d = 2*order;
 % [objective, mom_con, supp_con] = PM.cons(d);
 sol = PM.run(order);
-fprintf('L2 bound: %0.5f\n', sqrt(sol.obj_rec))
+fprintf('L4 bound: %0.5f\n', (sol.obj_rec)^(0.25))
+% fprintf('L2 bound: %0.5f\n', sqrt(sol.obj_rec))
 % [objective, cons_eq, cons_ineq] = PM.loc.all_cons(d);
 
 [recover, mom_rec, corner_rec] = PM.loc.recover();

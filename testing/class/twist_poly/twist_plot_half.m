@@ -1,6 +1,6 @@
-load('twist_4.mat')
+load('twist_5.mat')
 
-dist = sqrt(sol.obj_rec);
+% dist = sqrt(sol.obj_rec);
 
 %% compute the initial set
 [Xs, Ys, Zs] = sphere(40);
@@ -77,3 +77,4 @@ plot3(xt(:, 1), xt(:, 2), xt(:, 3), 'c')
 end
 
 daspect([1 1 1]) % preserves the shape of torus
+view(-8.257407017987877, 17.199043276682510);

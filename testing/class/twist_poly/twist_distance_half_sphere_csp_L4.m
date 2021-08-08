@@ -52,7 +52,7 @@ f = f_true(0, x);
 PM = distance_manager(lsupp, f);
 % loc = location_distance(lsupp, f);
 
-order = 5;
+order = 1;
 d = 2*order;
 % [objective, mom_con, supp_con] = PM.cons(d);
 sol = PM.run(order);

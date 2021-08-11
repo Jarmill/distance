@@ -104,9 +104,11 @@ Lv = Tmax*jacobian(v, om)*f_func(om) + jacobian(v, t);
 %% shape relation (w and z)
 %this is likely the bottleneck
 shape_transform = om(3:4) + [om(1), -om(2); om(2), om(1)]*(shape_size*s);
+shape_transform = om(3:4);
 w_push = replace(w, x, shape_transform);
 
-[p_wz, cons_wz, Gram_wz] = sym_yalmip_psatz(w_push - z, SOm, 2*order, [om; s], [0,1,0,5]);
+% [p_wz, cons_wz, Gram_wz] = sym_yalmip_psatz(w_push - z, SOm, 2*order, [om; s], [0,1,0,5]);
+[p_wz, cons_wz, Gram_wz] = sym_yalmip_psatz(w_push - z, Om, order, [om], [0,1,0,3]);
 
 %% cost proxy
 %this can be decomposed through csp if desired

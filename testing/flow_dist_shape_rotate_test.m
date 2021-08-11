@@ -15,16 +15,18 @@ rng(343, 'twister');
 status_feas = 1;
 
 %options 
-SOLVE_DIST = 1;
+SOLVE_DIST = 0;
 SOLVE_FEAS = 0;
 
-SAMPLE = 1;
+SAMPLE = 0;
 
 PLOT_FLOW = 1;
 PLOT_DIST = 0;
 
+MOM_SUB = 1;
+
 n = 2;
-order = 2;
+order =3;
 d = 2*order;
 
 
@@ -54,6 +56,7 @@ Ru = 0.5;
 % shape_angle = 0;
 % shape_angle = pi/6;
 shape_angle = 5*pi/12;
+
 shape_side = 0.1;
 
 
@@ -131,7 +134,7 @@ supp_con = [t0 == 0; t_occ*(1-t_occ)>=0; tp*(1-tp) >=0;
     subs(Wall_con, w, w_occ);
     subs(Wall_con, w, wp);
     subs(Wall_con, w, ws);
-    ss.^2 <= shape_side^2;
+    ss.^2 <= 1;
     W0_con;
     xx.^2 <= BOX^2; 
     unsafe_cons >= 0; %xu
@@ -149,9 +152,12 @@ v  = mmon([t_occ; w_occ], d);
 f_occ = subs_vars(f, w, w_occ);
 Ay = mom(diff(v, t_occ) + diff(v, w_occ)*f_occ); 
 
+if MOM_SUB
+    Liou_con = (yp == Ay + y0);
+else
     Liou = Ay + (y0 - yp);
     Liou_con = (Liou == 0);
-
+end
 %marginal between peak and shape
 ysw = mom(mmon(ws, d));
 
@@ -159,16 +165,25 @@ ypw = mom(mmon(wp, d));
 
 ywx = mom(mmon(xx, d));
 
-peak_shape = (ypw - ysw == 0);
+%
+
+if MOM_SUB
+     peak_shape = (ysw == ypw);
+else
+     peak_shape = (ypw - ysw == 0);
+end
 
 %marginal between shape and wass
 % R_shape = [cos(shape_angle) -sin(shape_angle); sin(shape_angle) cos(shape_angle)];
 % shape_transform = xs + R_shape*ss;
-shape_transform = ws(1:2) + [ws(3), -ws(4); ws(4), ws(3)]*ss;
+shape_transform = ws(1:2) + [ws(3), -ws(4); ws(4), ws(3)]*ss*shape_side;
 push_s = subs(mmon(xx, d), xx, shape_transform);
 
-wass_shape = (ywx - mom(push_s) == 0);
-    
+% if MOM_SUB
+%     wass_shape = (ywx == mom(push_s));
+% else
+    wass_shape = (ywx - mom(push_s) == 0);
+% end
 %constraints together
 mom_con = [Liou_con; wass_shape; peak_shape; mass(mu0)==1];
 
@@ -205,51 +220,22 @@ ranks = rank(Ms_1, 1e-3);
 
 xu_rec = double(mom(xu));
 xp_rec = double(mom(xx));
-x0_rec = double(mom(x0));
-xs_rec = double(mom(xs));
+w0_rec = double(mom(w0));
+ws_rec = double(mom(ws));
 ss_rec = double(mom(ss));
 tp_rec = Tmax*double(mom(tp));
 
 
 optimal_pt = all([rankp; rank0; rankw; ranks]==1);
 
+
+rot_shape = struct('xu', xu_rec, 'xp', xp_rec, 'w0', w0_rec, 'ws', ws_rec,...
+    'ss', ss_rec, 'tp', tp_rec, 'M0', M0_1, 'Mp', Mp_1, 'Ms', Ms_1, 'Mw', Mw_1,...
+    'order', order, 'dist', dist_rec);
+
+
 end 
 
-%% Feasibility program (should probably be solved first)
-if SOLVE_FEAS
-    
-    %initial in X0
-    %terminal (peak) in Xu
-    u_cons_feas = subs_vars([c1f; c2f], x, xp);
-    
-    supp_con_feas = [t0 == 0; t_occ*(1-t_occ)>=0; tp*(1-tp) >=0;
-    x_occ.^2 <= BOX^2;
-    X0_con;
-    u_cons_feas >= 0];
-%     xx.^2 <= BOX^2; 
-%     u_cons >= 0;
-    
-    
-    mom_con_feas = [Liou_con; mass(mu0)==1];
-    objective_feas = min(mom(xp(2)));
-    
-    P_feas = msdp(objective_feas, ...
-    mom_con_feas, supp_con_feas);
-
-    %solve LMIP moment problem
-    [status_feas, obj_feas, m_feas, dual_rec_feas] = msol(P_feas);    
-
-%     M0_1_feas = M0(1:(n+2), 1:(n+2));
-%     Mp_1_feas = Mp(1:(n+2), 1:(n+2));
-% 
-%     rankp_feas = rank(Mp_1, 1e-3);
-%     rank0_feas = rank(M0_1, 1e-3);
-% 
-%     xp_feas_rec = double(mom(xp));
-%     x0_feas_rec = double(mom(x0));
-%     tp_feas_rec = Tmax*double(mom(tp));
-
-end
 
 %% Sample trajectories
 if SAMPLE
@@ -259,7 +245,7 @@ if SAMPLE
 
     
     flow_event = @(t, x) box_event(t, x, BOX);
-    sample_x = @() circle_sample(1)'*R0 + C0;    
+    sample_x = @() [circle_sample(1)'*R0 + C0;  [cos(shape_angle); sin(shape_angle)];];  
 
     
     ode_options = odeset('Events',flow_event, 'MaxStep', 0.05, 'AbsTol', 1e-7, 'RelTol', 1e-6);;
@@ -267,15 +253,16 @@ if SAMPLE
     out_sim = cell(Nsample, 1);
     
     %distance function
-    dist_func = @(x_in) aff_half_circ_dist(x_in, Ru, theta_c, Cu);
+%     dist_func = @(x_in) aff_half_circ_dist(x_in, Ru, theta_c, Cu);
 %     peak_traj_dist = arrayfun(@(i) dist_func(out_sim_peak.x(i, :)'),...
 %         1:size(out_sim_peak.x, 1));
     
     for i = 1:Nsample
         x0_curr = sample_x();        
         [time_curr, x_curr] = ode15s(@(t, x) f_func(x), [0, Tmax], x0_curr, ode_options);
-        dist_curr = arrayfun(@(i) dist_func(x_curr(i, :)'),...
-            1:size(x_curr, 1))';
+%         dist_curr = arrayfun(@(i) dist_func(x_curr(i, :)'),...
+%             1:size(x_curr, 1))';
+        dist_curr = [];
         
         out_sim{i} = struct('t', time_curr, 'x', x_curr, 'dist', dist_curr);
         
@@ -337,11 +324,16 @@ if PLOT_FLOW
 %         end
 %     end
 %     
-    rect_shape_0 = R_shape*shape_side*[1,1,-1,-1,1;-1,1,1,-1,-1];
-    rect_shape_init = rect_shape_0 + x0_rec;
-    rect_shape_peak = rect_shape_0+ xs_rec;
 
-%     plot(X0(1, :), X0(2, :), 'k', 'Linewidth', 3, 'DisplayName', 'Initial Set')
+    R_shape_0 = [w0_rec(3), -w0_rec(4); w0_rec(4), w0_rec(3)];
+    rect_shape_0 = R_shape_0*shape_side*[1,1,-1,-1,1;-1,1,1,-1,-1];
+    
+    R_shape_p = [ws_rec(3), -ws_rec(4); ws_rec(4), ws_rec(3)];
+    rect_shape_p = R_shape_p*shape_side*[1,1,-1,-1,1;-1,1,1,-1,-1];
+    rect_shape_init = rect_shape_0 + w0_rec(1:2);
+    rect_shape_peak = rect_shape_p+ ws_rec(1:2);
+
+    plot(X0(1, :), X0(2, :), 'k', 'Linewidth', 3, 'DisplayName', 'Initial Set')
     patch(Xu(1, :), Xu(2, :), 'r', 'Linewidth', 3, 'EdgeColor', 'none', 'DisplayName', 'Unsafe Set')
 %distance contour
     x_dist_align = dist_contour(100, Ru, dist_rec);
@@ -355,30 +347,40 @@ if PLOT_FLOW
     
     
     if optimal_pt
+        flow_event = @(t, x) box_event(t, x, BOX);
+            ode_options = odeset('Events',flow_event, 'MaxStep', 0.05, 'AbsTol', 1e-7, 'RelTol', 1e-6);;
 
-        plot(out_sim_peak.x(:, 1), out_sim_peak.x(:, 2), 'b', 'DisplayName', 'Closest Traj.', 'LineWidth', 2);       
+        [time_opt_traj, w_opt_traj] = ode15s(@(t, w) f_func(w), ...
+            [0, Tmax], w0_rec, ode_options);
+
+        plot(w_opt_traj(:, 1), w_opt_traj(:, 2), 'b', 'DisplayName', 'Closest Traj.', 'LineWidth', 2);       
         
-        scatter(x0_rec(1), x0_rec(2), 200, 'ob', 'DisplayName', 'Closest Initial', 'LineWidth', 2);        
-        scatter(xs_rec(1), xs_rec(2), 600, '.b', 'DisplayName', 'Closest Shape Center', 'LineWidth', 2);        
+        scatter(w0_rec(1), w0_rec(2), 200, 'ob', 'DisplayName', 'Closest Initial', 'LineWidth', 2);        
+        scatter(ws_rec(1), ws_rec(2), 600, '.b', 'DisplayName', 'Closest Shape Center', 'LineWidth', 2);        
         
-        scatter(xp_rec(1), xp_rec(2), 200, '*b', 'DisplayName', 'Closest Point', 'LineWidth', 2);        
-        scatter(xu_rec(1), xu_rec(2), 200, 'sb', 'DisplayName', 'Closest Unsafe', 'LineWidth', 2);        
-        
-         patch(rect_shape_init(1, :), rect_shape_init(2, :),'k', 'Linewidth', 3,'DisplayName', 'Initial Shape', 'EdgeColor', shape_color, 'FaceColor', 'None')
+
+        patch(rect_shape_init(1, :), rect_shape_init(2, :),'k', 'Linewidth', 3,'DisplayName', 'Initial Shape', 'EdgeColor', shape_color, 'FaceColor', 'None')
     
         patch(rect_shape_peak(1, :), rect_shape_peak(2, :),'k', 'Linewidth', 3,'DisplayName', 'Peak Shape', 'EdgeColor', shape_color, 'FaceColor', 'None')
         plot([xp_rec(1); xu_rec(1)], [xp_rec(2); xu_rec(2)], ':k', 'DisplayName', 'Closest Distance', 'Linewidth', 1.5)
        
+        scatter(xp_rec(1), xp_rec(2), 200, '*b', 'DisplayName', 'Closest Point', 'LineWidth', 2);        
+        scatter(xu_rec(1), xu_rec(2), 200, 'sb', 'DisplayName', 'Closest Unsafe', 'LineWidth', 2);        
+        
+        
     end
 
     
-    legend('location', 'northwest')
+%     legend('location', 'northwest')
     
-    xlim([-0.6, 1.7])
-    ylim([-1.3, 0.3])
+%     xlim([-0.6, 1.7])
+%     ylim([-1.3, 0.3])
+    xlim([-0.6, 1.9])
+    ylim([-1.3, 0.5])
     pbaspect([diff(xlim), diff(ylim), 1])
     xlabel('x_1')
     ylabel('x_2')
+
 %     axis square
     
     if status_feas == 0
@@ -388,6 +390,10 @@ if PLOT_FLOW
         title_str = (['L_2 distance bound is ', num2str(dist_rec, 3)]);        
     end
     title(title_str, 'FontSize' , FS_title)
+    
+    
+    title('')
+    axis off
 end
 
 %% Distance plot

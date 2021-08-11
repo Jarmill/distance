@@ -326,7 +326,7 @@ if PLOT_FLOW
     rect_shape_init = rect_shape_0 + x0_rec;
     rect_shape_peak = rect_shape_0+ xs_rec;
 
-%     plot(X0(1, :), X0(2, :), 'k', 'Linewidth', 3, 'DisplayName', 'Initial Set')
+    plot(X0(1, :), X0(2, :), 'k', 'Linewidth', 3, 'DisplayName', 'Initial Set')
     patch(Xu(1, :), Xu(2, :), 'r', 'Linewidth', 3, 'EdgeColor', 'none', 'DisplayName', 'Unsafe Set')
 %distance contour
     x_dist_align = dist_contour(100, Ru, dist_rec);
@@ -359,8 +359,10 @@ if PLOT_FLOW
     
     legend('location', 'northwest')
     
-    xlim([-0.6, 1.7])
-    ylim([-1.3, 0.3])
+%     xlim([-0.6, 1.7])
+%     ylim([-1.3, 0.3])
+    xlim([-0.6, 1.9])
+    ylim([-1.3, 0.5])
     pbaspect([diff(xlim), diff(ylim), 1])
     xlabel('x_1')
     ylabel('x_2')

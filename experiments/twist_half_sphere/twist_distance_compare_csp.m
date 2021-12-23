@@ -62,18 +62,21 @@ PM_csp = distance_manager(lsupp_csp, f);
 
 % [recover, mom_rec, corner_rec] = PM.loc.recover();
 % sol_report = run_order(order, PM, PM_csp);
-order_list = 2:5;
-sol_report_list = cell(length(order_list), 1);
-for i = 1:length(order_list)
-    order = order_list(i);
-    sol_report_list{i} = run_order(order, PM, PM_csp);
-    save('twist_csp_compare_report.mat', 'sol_report_list');
-end
-
+% order_list = 2:5;
+order_list = 6;
+% sol_report_list = cell(length(order_list), 1);
+% load('twist_csp_compare_report.mat');
+% for i = 1:length(order_list)
+% %     order = order_list(i);
+% order = order_list;
+%     sol_report_list{5} = run_order(order, PM, PM_csp);
+%     save('twist_csp_compare_report.mat', 'sol_report_list');
+% end
+sol_csp_5 = PM_csp.run(5)
 function sol_report = run_order(order, PM, PM_csp)
 % d = 2*o
 sol = PM.run(order);
-sol_csp = PM.run(order);
+sol_csp = PM_csp.run(order);
 sol_report = struct('order', order, 'obj', sol.obj_rec, 'time', sol.solver_time,...
     'obj_csp', sol_csp.obj_rec, 'time_csp', sol_csp.solver_time);
 

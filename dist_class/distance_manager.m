@@ -34,7 +34,9 @@ classdef distance_manager < manager_interface
             P = msdp(min(objective), mom_con, supp_con);
 
             sol = struct;
+            tic;
             [sol.status,sol.obj_rec, ~,sol.dual_rec]= msol(P);        
+            sol.solver_time = toc;
         end  
         
         function [objective, mom_con, supp_con, len_dual] = cons(obj,d, Tmax)

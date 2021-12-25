@@ -1,12 +1,14 @@
 A description of the experiments in the Distance Estimation paper
 
-`flow_distance_test`: Find the distance of closest approach between trajectories following the Flow system and starting in the circular initial set and points in the half-circle. Figure 6, Section III.
-
 `flow_dist_moon`: Finding the closest distance for a non-convex moon-shaped set on the Flow system. Figure 8, section IV.A.
 
 `twist_distance_half_sphere`: Distance betweens points starting in a sphere following the Twist system and unsafe points in a half-sphere. Figure 10a, Section IV.B.
 
 `twist_distance_half_sphere`: Same scenario as `twist_distance_half_sphere`, but now using the L4 distance. Figure 10b, Section IV.B.
+
+
+`flow_dist_sos_sdpa_gmp_precise`: Use SDPA-GMP to validate that an unsafe trajectory of the Flow system has a minimal distance of 0. Figure 11, section IV.A.
+
 
 `twist_distance_half_sphere_csp`: Applying correlative sparsity to the `twist_distance_half_sphere` example.
 
@@ -15,7 +17,6 @@ A description of the experiments in the Distance Estimation paper
 `flow_dist_shape_test`: Distance between points on a translating shape (square) and the half-circle unsafe set. Figure 15, section VI.D.
 
 `flow_dist_shape_rotate_test`: The square is now rotating at a constant angular velocity of 1 radian/second. This optimization problem is significantly harder than in `flow_dist_shape_test` due to the shape measure. Figure 16, section VI.D.
-
 
 `flow_distance_test_w`: Flow-half-circle distance test where dynamics have a time-varying uncertainty process. Figure 17, section VII.A.
 

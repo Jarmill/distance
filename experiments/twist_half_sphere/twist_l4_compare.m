@@ -51,7 +51,7 @@ PM = distance_manager(lsupp, f);
 PM_csp = distance_manager(lsupp_csp, f);
 
 
-order_list = 2:3;
+order_list = 2:5;
 % order_list = 6;
 % sol_report_list = cell(length(order_list), 1);
 % load('twist_csp_compare_report.mat');

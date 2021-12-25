@@ -1,5 +1,7 @@
 A description of the experiments in the Distance Estimation paper
 
+`flow_distance_test`: Find the distance of closest approach between trajectories following the Flow system and starting in the circular initial set and points in the half-circle. Figure 6, Section III.
+
 `flow_dist_moon`: Finding the closest distance for a non-convex moon-shaped set on the Flow system. Figure 8, section IV.A.
 
 `twist_distance_half_sphere`: Distance betweens points starting in a sphere following the Twist system and unsafe points in a half-sphere. Figure 10a, Section IV.B.

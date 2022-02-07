@@ -49,12 +49,12 @@ FS_title = 16;
 if SOLVE_DIST
 mset clear
 mset('yalmip',true);
-% mset(sdpsettings('solver', 'mosek'));
+mset(sdpsettings('solver', 'mosek'));
 % mset(sdpsettings('solver', 'mosek', 'mosek.MSK_DPAR_BASIS_TOL_S', 1e-9, ...
 %                 'mosek.MSK_DPAR_BASIS_TOL_X', 1e-9, 'mosek.MSK_DPAR_INTPNT_CO_TOL_MU_RED', 1e-10, ...
 %                 'mosek.MSK_DPAR_INTPNT_TOL_PATH', 1e-6));
 %     
-mset(sdpsettings('solver', 'sedumi'))
+% mset(sdpsettings('solver', 'sedumi'))
 mpol('x', 2, 1);
 % f = Tmax * [x(2); -x(1) + (1/3).* x(1).^3 - x(2) ];
 f = Tmax*f_func(x);

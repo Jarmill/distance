@@ -28,7 +28,7 @@ classdef unsafe_support < loc_support
             
             obj@loc_support(vars, loc_ref);
             
-            if nargin > 1                
+            if (nargin > 1) && ~isempty(loc_ref)
                 obj.X_unsafe = subs_vars(loc_ref.X_unsafe, loc_ref.vars.y, obj.vars.y);                
                 obj.dist = loc_ref.dist;                   
             end

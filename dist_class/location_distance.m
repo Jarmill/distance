@@ -10,15 +10,15 @@ classdef location_distance < location
     end
     
     methods
-        function obj = location_distance(unsafe_supp, f, id)
+        function obj = location_distance(unsafe_supp, f, loc_id)
             %LOCATION_DISTANCE Construct an instance of this class
             %   Detailed explanation goes here
             if nargin < 3
-                id = [];   
+                loc_id = [];   
             end
             
             %superclass constructor
-            obj@location(unsafe_supp, f, 0, id);
+            obj@location(unsafe_supp, f, 0, loc_id);
             
             %now deal with customized code for distance estimation            
             obj.dist = obj.process_distance(unsafe_supp.dist);
@@ -41,7 +41,7 @@ classdef location_distance < location
                 if N_unsafe > 1
                     suffix = ['_', num2str(i), suffix];
                 end
-                if ~isempty(id)
+                if ~isempty(loc_id)
                     suffix = ['_', num2str(loc_id), suffix];
                 end
                 obj.wass{i} = obj.meas_wass_def(suffix, obj.supp.X, obj.supp.X_unsafe{i});
@@ -164,6 +164,11 @@ classdef location_distance < location
                 end                                              
             end
             
+        end
+
+        function [cons, len_w] = marg_cons(obj, d)
+            cons = obj.marg_wass_con(d)==0;
+            len_w = length(cons);
         end
         
         function cons = marg_wass_con(obj, d)

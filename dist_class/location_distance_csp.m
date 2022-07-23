@@ -22,20 +22,31 @@ classdef location_distance_csp < location_distance
         end
         
         
-        %create the distance measures
-        
+        %create the distance measures        
+
         function meas_new = meas_wass_def(obj, suffix, supp_X, supp_Xu)
             meas_new = meas_wass_csp(obj.vars, suffix, supp_X, supp_Xu);
         end
         
         %constraint generation
+        function [cons, len_w] = marg_cons(obj, d)
+            [cons, len_w] = marg_cons@location_distance(obj, d);
+            
+            cons = [cons; obj.overlap_cons(d)];
+        end
+
+        function cons = overlap_cons(obj, d)
+            cons = [];
+            for i = 1:length(obj.wass)
+                cons = [cons; obj.wass{i}.overlap_con(d)];
+            end
+        end
+
         function [objective, cons_eq, cons_ineq, len_dual] = all_cons(obj, d)
             [objective, cons_eq, cons_ineq, len_dual] = all_cons@location_distance(obj, d);
             
             %include the csp clique overlap constraints
-            for i = 1:length(obj.wass)
-                cons_eq = [cons_eq; obj.wass{i}.overlap_con(d)];
-            end
+            cons_eq = [cons_eq; obj.overlap_cons(d)];
         end
     end
 end

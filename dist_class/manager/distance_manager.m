@@ -14,31 +14,12 @@ classdef distance_manager < manager_interface
                 loc_curr = location_distance(unsafe_supp, f, []);
             end
             obj@manager_interface(loc_curr);
+            
+            obj.MAXIMIZE = 0;
                         
         end
         
-  %% Formulating and solving program
-        function sol = solve(obj, objective, mom_con,supp_con)
-            %SOLVE formulate and solve peak estimation program from
-            %constraints and objective    
-            
-            %TODO: incorporate minquery into maximin (minimax) formulation
-
-            mset('yalmip',true);
-            %make sure the solution is precise
-            mset(obj.sdp_settings);
-            % https://docs.mosek.com/9.2/pythonfusion/parameters.html
-            
-            
-
-            P = msdp(min(objective), mom_con, supp_con);
-
-            sol = struct;
-            tic;
-            [sol.status,sol.obj_rec, ~,sol.dual_rec]= msol(P);        
-            sol.solver_time = toc;
-        end  
-        
+  %% Formulating and solving program        
         function [objective, mom_con, supp_con, len_dual] = cons(obj,d, Tmax)
             %PEAK_CONS formulate support and measure constraints for peak
             %program at degree d

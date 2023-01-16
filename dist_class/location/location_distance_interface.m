@@ -1,4 +1,4 @@
-classdef (Abstract) location_distance_interface
+classdef (Abstract) location_distance_interface < handle
     %LOCATION_DISTANCE_INTERFACE A location (space) of a dynamical system
     % Specifically designed to compare distances from points along
     % trajectories to points in an unsafe set
@@ -9,10 +9,10 @@ classdef (Abstract) location_distance_interface
     end
     
     methods
-        function obj = location_distance_interface(unsafe_supp, f, loc_id)
+        function obj = location_distance_interface(unsafe_supp, loc_id)
             %LOCATION_DISTANCE Construct an instance of this class
             %   Detailed explanation goes here
-            if nargin < 3
+            if nargin < 2
                 loc_id = [];   
             end
            
@@ -322,13 +322,12 @@ classdef (Abstract) location_distance_interface
         end      
         
         %% support 
-        function supp_con_out = supp_con(obj)
-            supp_con_out = supp_con@location(obj);
+        function wass_supp = supp_con(obj)
+%             supp_con_out = supp_con@location(obj);
             wass_supp=[];
             for i =1:length(obj.wass)
                 wass_supp = [wass_supp; obj.wass{i}.supp];
-            end
-            supp_con_out = [supp_con_out; wass_supp];
+            end            
         end
         
         function [optimal, mom_out, corner] = recover(obj, tol)

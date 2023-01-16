@@ -1,13 +1,8 @@
-classdef location_distance < location
+classdef location_distance < location & location_distance_interface
     %LOCATION_DISTANCE A location (space) of a dynamical system
     % Specifically designed to compare distances from points along
     % trajectories to points in an unsafe set
-    
-    properties
-        dist; %distance penalty to be used
-        
-        wass; %wasserstein joint probability measure for distance
-    end
+   
     
     methods
         function obj = location_distance(unsafe_supp, f, loc_id)
@@ -19,176 +14,9 @@ classdef location_distance < location
             
             %superclass constructor
             obj@location(unsafe_supp, f, 0, loc_id);
-            
-            %now deal with customized code for distance estimation            
-            obj.dist = obj.process_distance(unsafe_supp.dist);
-            
-%             vars_wass = struct('x', obj.vars.x, 'y', obj.vars.y);
-            
-            %generalize to multiple unsafe sets 
-%             unsafe_supp.
-            if ~iscell(obj.supp.X_unsafe)
-                obj.supp.X_unsafe= {obj.supp.X_unsafe};         
-            end
-            
-            %define wasserstein measures
-            N_unsafe = length(obj.supp.X_unsafe);
-            obj.wass = cell(N_unsafe, 1);
-            
-
-            for i = 1:N_unsafe
-                suffix = '_wass';
-                if N_unsafe > 1
-                    suffix = ['_', num2str(i), suffix];
-                end
-                if ~isempty(loc_id)
-                    suffix = ['_', num2str(loc_id), suffix];
-                end
-                obj.wass{i} = obj.meas_wass_def(suffix, obj.supp.X, obj.supp.X_unsafe{i});
-            end
-        end
-        
-        function meas_new = meas_wass_def(obj, suffix, supp_X, supp_Xu)
-            %MEAS_WASS_DEF Define a new wasserstein measure 
-            vars_new = struct('x', [], 'y', []);
-            varnames = fields(vars_new);
-            for i = 1:length(varnames)
-                curr_name = varnames{i};
-                curr_var = obj.vars.(curr_name);
-                
-                if ~isempty(curr_var)
-                    %declare a new variable
-                    new_name = [curr_name, suffix];
-                    mpol(new_name, length(curr_var), 1);
-                    %load the new variable into vars_new
-                    vars_new.(curr_name) = eval(new_name);
-                end
-%                 obj.vars.(curr_var) = vars.(curr_var);
-            end
-            
-            supp_new = subs_vars([supp_X; supp_Xu], [obj.vars.x; obj.vars.y], ...
-                        [vars_new.x; vars_new.y]);
-                    
-            meas_new = meas_wass(vars_new, supp_new);
-           
-        end
-        
-        function dist_out = process_distance(obj,dist_in)
-            %PROCESS_DISTANCE turn the distance penalty into a scalar or a
-            %cell. If it is a scalar, no changes needed. If it is a vector,
-            %turn it into a cell.
-              
-            if iscell(dist_in)
-                dist_out = dist_in;
-                %get rid of cell wrapper if distance is truly scalar
-                if length(dist_in) == 1 && length(dist_in{1}) == 1
-                    dist_out = dist_in{1};
-                end
-            else
-                %dist_in is a supcon scalar or vector
-                if length(dist_in) == 1
-                    dist_out = dist_in;
-                else
-                    %wrap supcon vector in a cell for 'objective_con'
-                    %processing
-                    dist_out = {dist_in};
-                end
-            end
-        end
-        
-        %% Constraint Generation
-        function [obj_min, obj_con_ineq, obj_con_eq] = objective_con(obj, dist)
-            %OBJECTIVE_CON deal with the objective, which is the
-            %expectation of distance with regards to the wasserstein
-            %penalty. This is a minimization, so obj_min is necessary
-            if nargin == 1
-                dist = obj.dist;
-            end
-                                    
-            obj_con_ineq = [];
-            obj_con_eq = [];
-            joint_vars = [obj.vars.x; obj.vars.y];
-            if isempty(dist)
-                obj_min = 0;
-            elseif (length(dist) == 1) && ~iscell(dist)
-                %a scalar distance penalty, no lifting necessary
-                dist_subs = 0;
-                for i = 1:length(obj.wass)
-%                     dist_subs = dist_subs + mom(obj.wass{i}.var_sub(joint_vars, dist));
-                    dist_subs = dist_subs + obj.wass{i}.mom_objective(dist, joint_vars);
-                end
-                obj_min = (dist_subs);                            
-            else                
-                %dist is a cell, deal with cells
-                %includes linear programming lifts
-                obj_min = 0;
-                obj_con_ineq = [];
-                if ~iscell(dist)
-                    dist = {dist};
-                end
-                obj.len_dual.beta = zeros(length(dist), 1);
-                for j =1:length(dist)
-                    
-                    %process the name of the variable q
-                    q_name = 'q';
-                    if ~isempty(obj.id)
-                        q_name = [q_name, '_', num2str(obj.id)];
-                    end
-                    if length(dist) > 1
-                        q_name = [q_name, '_', num2str(j)];
-                    end
-                    obj.len_dual.beta(j) = length(dist{j});
-
-                    %insantiate and store the variable q
-                    mpol(q_name, 1, 1);
-                    q = eval(q_name);
-                    muq = meas(q);
-                    obj.cost_q = [obj.cost_q; q];
-                    
-                    %objective with q
-                    obj_min = obj_min + mom(q);
-                    
-                    %generate constraints 
-                    dist_curr = dist{j};
-                    dist_subs = 0;
-                    %sum up the expectation (moment) of distance 
-                    %from each unsafe set's wasserstein measure
-                    for i = 1:length(obj.wass)
-%                         dist_subs = dist_subs + mom(obj.wass{i}.var_sub(joint_vars, dist_curr));
-                        dist_subs = dist_subs + obj.wass{i}.mom_objective(dist, joint_vars);
-                    end
-                    
-                    %moment constraint with q
-                    obj_con_ineq = [obj_con_ineq; (mom(q) >= dist_subs)];
-                    obj_con_eq = [obj_con_eq; mass(q) == 1];
-                end                                              
-            end
-            
-        end
-
-        function [cons, len_w] = marg_cons(obj, d)
-            cons = obj.marg_wass_con(d)==0;
-            len_w = length(cons);
-        end
-        
-        function cons = marg_wass_con(obj, d)
-            %MARG_WASS_CON Constrain the x-marginals of the total 
-            %wasserstein measureto align to the x-marginals of the peak 
-            %measure.
-            
-            %wasserstein marginals
-            marg_wass = 0;
-            for i = 1:length(obj.wass)
-                marg_wass = marg_wass + obj.wass{i}.mom_monom_x(d);
-            end
-            
-            %terminal marginals
-            marg_term = obj.term.mom_monom_x(d);
-            
-            %equality of marginals
-            %check the signs for nonnegativity and recovery
-            cons = (marg_wass - marg_term);            
-        end
+            obj@location_distance_interface(unsafe_supp, loc_id);
+                        
+        end     
         
         function [objective, cons_eq, cons_ineq, len_dual] = all_cons(obj, d)
             %ALL_CONS all constraints involving solely location
@@ -217,6 +45,11 @@ classdef location_distance < location
             %ensure this iss the correct sign
             cons_eq = [-liou; abscont; marg]==0; 
             cons_eq = [cons_eq; cons_eq_obj];
+        end
+        
+        function [objective, cons_ineq, cons_eq_obj] = objective_con(obj)
+            [objective, cons_ineq, cons_eq_obj] = ...
+                objective_con@location_distance_interface(obj);
         end
         
         function [len_out] = len_eq_cons(obj)
@@ -329,57 +162,29 @@ classdef location_distance < location
         %% support 
         function supp_con_out = supp_con(obj)
             supp_con_out = supp_con@location(obj);
-            wass_supp=[];
-            for i =1:length(obj.wass)
-                wass_supp = [wass_supp; obj.wass{i}.supp];
-            end
-            supp_con_out = [supp_con_out; wass_supp];
+            wass_con = supp_con@location_distance_interface(obj);
+            
+            supp_con_out = [supp_con_out; wass_con];
         end
         
         function [optimal, mom_out, corner] = recover(obj, tol)
             %RECOVER if top corner of the moment matrix is rank-1, then
             %return approximate optimizer
-            
-%             optimal = opt_init && opt_term;
-%             
-%             mom_out = struct('t0', mom_init.t, 'x0', mom_init.x, ...
-%                              'tp', mom_term.t, 'xp', mom_term.x);     
-%             corner = struct('init', corner_init, 'term', corner_term);
             if nargin < 2
                 tol = 5e-4;
             end
 
 %             
             [optimal, mom_out, corner] = recover@location_interface(obj, tol);
+            [optim_wass, mom_wass, corner_wass] = recover@location_distance_interface(obj, tol);
             
-            if isempty(obj.wass)
-                opt_wass = 1;
-                mom_wass.t = []; mom_wass.x = [];
-                corner_term = 0;
-            else
-%                 opt_wass = 0;
-                opt_wass_all = 0;
-                for i = 1:length(obj.wass)
-                    [opt_wass, mom_wass, corner_wass] = obj.wass{i}.recover(tol);
-                    
-                    if iscell(corner_wass)
-                        corner_crit = corner_wass{1}(1,1) > (1-tol);
-                    else
-                        corner_crit = corner_wass(1,1) > (1-tol);
-                    end
-                    
-                    if corner_crit
-                        opt_wass_all = opt_wass;
-                        mom_out.y = mom_wass.y;
-                        corner.wass = corner_wass;
-                        break
-                    end
-                end
-                
-                optimal = optimal && opt_wass_all;
-            end
-            
+            optimal = optimal && optim_wass;
+            corner.wass = corner_wass;
+            mom_out.y = mom_wass.y;
+
         end
+            
+        
         
     end
 end

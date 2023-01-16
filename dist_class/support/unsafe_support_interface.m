@@ -1,5 +1,5 @@
-classdef unsafe_support < loc_support
-    %UNSAFE_SUPPORT Support of the unsafe set in a system    
+classdef (Abstract) unsafe_support_interface
+    %UNSAFE_SUPPORT_INTERFACE Support of the unsafe set in a system    
     
     properties
 %         vars = struct('x', [], 'y', []);        
@@ -14,7 +14,7 @@ classdef unsafe_support < loc_support
     end
     
     methods
-        function obj = unsafe_support(vars, loc_ref)
+        function obj = unsafe_support_interface(vars, loc_ref)
             %UNSAFE_SUPPORT Construct an instance of this class
             %   Detailed explanation goes here
 %             obj.Property1 = inputArg1 + inputArg2;
@@ -25,9 +25,7 @@ classdef unsafe_support < loc_support
             if nargin == 1
                 loc_ref = [];
             end
-            
-            obj@loc_support(vars, loc_ref);
-            
+         
             if (nargin > 1) && ~isempty(loc_ref)
                 obj.X_unsafe = subs_vars(loc_ref.X_unsafe, loc_ref.vars.y, obj.vars.y);                
                 obj.dist = loc_ref.dist;                   

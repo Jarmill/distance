@@ -118,7 +118,8 @@ classdef meas_wass_csp < handle
                mom_prev = mom(mmon(var_prev, d));
                mom_next = mom(mmon(var_next, d));
                
-               con_curr = (mom_prev == mom_next);
+%                con_curr = (mom_prev == mom_next);
+               con_curr = (mom_prev - mom_next==0);
                
                con = [con; con_curr];               
            end

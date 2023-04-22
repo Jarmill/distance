@@ -61,6 +61,16 @@ classdef meas_wass < meas_interface
             mom_obj = mom(obj.var_sub(joint_vars, p));
         end
         
+        function mom_out= mom_sub(obj, vars_old, f_old)
+            %MOM_PUSH pushforward moments v(f(x))
+            
+            mom_out = 0;
+            for i = 1:length(obj.meas)
+                curr_push = obj.var_sub(vars_old, f_old);
+                mom_out = mom_out + mom(curr_push);
+            end
+        end  
+        
         function [optimal, mom_out, corner] = recover(obj, tol)
             %RECOVER if top corner of the wasserstein moment matrix is 
             % rank-1, then return approximate pair of points of closest 
